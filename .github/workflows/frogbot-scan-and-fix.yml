@@ -31,6 +31,7 @@ jobs:
           #
           # The command that installs the project dependencies (e.g "npm i", "nuget restore" or "dotnet restore")
           # JF_INSTALL_DEPS_CMD: ""
+          JF_PROJECT: etn
 
           # [Mandatory]
           # JFrog platform URL
