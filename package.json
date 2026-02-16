@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "private": true,
+ "version": "1.0.0",
   "scripts": {
     "build": "email build",
     "dev": "test test",
