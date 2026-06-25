@@ -2,6 +2,7 @@ name: "Frogbot Scan Repository"
 on:
   workflow_dispatch:
   schedule:
+    # The repository will be scanned once a day at 00:00 GMT.
     - cron: "0 0 * * *"
   push:
     branches:
@@ -19,30 +20,34 @@ jobs:
       matrix:
         branch: [ "main" ]
     steps:
-      # 1. Check out the repository onto your self-hosted runner
+      # 1. Explicitly check out the repository to the self-hosted runner workspace
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.branch }}
 
-      # 2. Ensure Node.js and npm are available
+      # 2. Ensure Node.js is present for the npm install command
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Change to your project's node version
+          node-version: '20' # Adjust this to match your runtime requirement
 
-      # 3. Run the installation before the scan
-      - name: Install Dependencies
-        run: npm install
-
-      # 4. Execute Frogbot Scan on the local, populated workspace
-      - uses: jfrog/frogbot@v3
+      # 3. Pull the latest Frogbot script via curl and run the scan
+      - name: Download and Execute Frogbot
         env:
+          # Your JFrog & GitHub Authorization Tokens
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}
           JF_GIT_TOKEN: ${{ secrets.JF_GITHUB_TOKEN }}
-          # CRITICAL: Forces Frogbot to read the node_modules you just installed
-          JF_USE_LOCAL_REPOSITORY: true 
+          
+          # Crucial Flags for Dependencies & Local Workspaces
+          JF_USE_LOCAL_REPOSITORY: true
+          JF_INSTALL_DEPS_CMD: "npm install"
+          
+          # Debugging & General Environment Controls
           CI: true
           JFROG_CLI_LOG_LEVEL: DEBUG
+        run: |
+          curl -fL "https://releases.jfrog.io/artifactory/frogbot/v3/[RELEASE]/getFrogbot.sh" | sh
+          ./frogbot scan-repository
