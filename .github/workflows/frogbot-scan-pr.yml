@@ -45,6 +45,7 @@ jobs:
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}
           JF_GIT_TOKEN: ${{ secrets.JF_GITHUB_TOKEN }}
           JF_GIT_REPO: "frogbot-npm-test"
+          JF_GIT_PROVIDER: "github"
           # Forces Frogbot to scan the local directory containing the node_modules
           
           # Debugging & General Environment Controls
