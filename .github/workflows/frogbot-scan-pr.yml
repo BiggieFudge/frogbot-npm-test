@@ -32,6 +32,10 @@ jobs:
         with:
           node-version: '20' # Adjust this to match your runtime requirement
 
+      # FIX: Install your dependencies directly in the workspace runner first
+      - name: Install Project Dependencies
+        run: npm install
+
       # 3. Pull the latest Frogbot script via curl and run the scan
       - name: Download and Execute Frogbot
         env:
@@ -40,10 +44,8 @@ jobs:
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}
           JF_GIT_TOKEN: ${{ secrets.JF_GITHUB_TOKEN }}
-          
-          # Crucial Flags for Dependencies & Local Workspaces
-          JF_USE_LOCAL_REPOSITORY: true
-          JF_INSTALL_DEPS_CMD: "npm install"
+          JF_GIT_REPO: "frogbot-npm-test"
+          # Forces Frogbot to scan the local directory containing the node_modules
           
           # Debugging & General Environment Controls
           CI: true
